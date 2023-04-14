@@ -1,5 +1,10 @@
 import { Inter } from "next/font/google";
-import { useGetCloudsQuery } from "@/lib/aivenApi";
+import {
+  useGetCloudsQuery,
+  getClouds,
+  getRunningQueriesThunk,
+} from "@/lib/aivenApi";
+import { wrapper } from "@/lib/store";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,3 +31,14 @@ export default function Home() {
     </main>
   );
 }
+
+export const getServerSideProps = wrapper.getServerSideProps(
+  (store) => async (context) => {
+    store.dispatch(getClouds.initiate());
+    await Promise.all(store.dispatch(getRunningQueriesThunk()));
+
+    return {
+      props: {},
+    };
+  }
+);
